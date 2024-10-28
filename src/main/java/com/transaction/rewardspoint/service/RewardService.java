@@ -18,6 +18,9 @@ import com.transaction.rewardspoint.repository.TransactionRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Service to calculate reward points for customer transactions.
+ */
 @Service
 @Slf4j
 public class RewardService {
@@ -27,12 +30,11 @@ public class RewardService {
 	private static Logger logger = LoggerFactory.getLogger(RewardService.class);
 
 	/**
-	 * This method is used for finding monthly rewards point by given customer for
-	 * the year.
-	 * 
-	 * @param customerId
-	 * @param year
-	 * @return
+	 * Calculates the reward points for each month of a given year for a customer.
+	 *
+	 * @param customerId the customer's unique ID
+	 * @param year       the year for which to calculate rewards
+	 * @return a map of months to reward points
 	 */
 	public Map<Month, Integer> getRewardsPerMonth(String customerId, int year) {
 
@@ -62,10 +64,10 @@ public class RewardService {
 	}
 
 	/**
-	 * Calculate Total reward points for a given transaction.
-	 * 
-	 * @param transaction
-	 * @return
+	 * Calculates the reward points for a specific transaction.
+	 *
+	 * @param transaction the transaction for which to calculate points
+	 * @return the calculated reward points
 	 */
 	public int calculateRewardPoints(Transaction transaction) {
 		double amount = transaction.getAmount();
@@ -79,12 +81,11 @@ public class RewardService {
 	}
 
 	/**
-	 * This method is used for finding total rewards point by given customer for
-	 * year.
-	 * 
-	 * @param customerId
-	 * @param year
-	 * @return
+	 * Calculates the total reward points for a customer in a given year.
+	 *
+	 * @param customerId the customer's unique ID
+	 * @param year       the year for which to calculate total rewards
+	 * @return the total reward points
 	 */
 	public int getTotalRewards(String customerId, int year) {
 		logger.info("Fetched total transactions for customer: {}, year: {}", customerId, year);
