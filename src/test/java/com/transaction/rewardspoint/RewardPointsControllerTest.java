@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.ResponseEntity;
 
 import com.transaction.rewardspoint.controller.RewardPointsController;
 import com.transaction.rewardspoint.exception.TransactionNotFoundException;
@@ -36,21 +37,42 @@ class RewardPointsControllerTest {
 
 		when(rewardService.getRewardsPerMonth(anyString(), anyInt())).thenReturn(rewards);
 
-		Map<Month, Integer> response = rewardsController.getCustomerRewardsByMonthly("cust1", 2024);
-
+		ResponseEntity<Map<Month, Integer>> response = rewardsController.getCustomerRewardsByMonthly("cust1", 2024);
 		assertNotNull(response);
-		assertEquals(90, response.get(Month.AUGUST));
-		assertEquals(30, response.get(Month.SEPTEMBER));
+		assertEquals(200, response.getStatusCode().value());
+		assertEquals(90, response.getBody().get(Month.AUGUST));
+		assertEquals(30, response.getBody().get(Month.SEPTEMBER));
+	}
+
+	@Test
+	public void testNoTransactionForCustomer() throws TransactionNotFoundException {
+
+		when(rewardService.getRewardsPerMonth(anyString(), anyInt()))
+				.thenThrow(new TransactionNotFoundException("cust1", 2024));
+
+		ResponseEntity<Map<Month, Integer>> response = rewardsController.getCustomerRewardsByMonthly("cust1", 2024);
+		assertEquals(404, response.getStatusCode().value());
+		assertEquals(null, response.getBody());
 	}
 
 	@Test
 	public void testGetTotalRewards() throws TransactionNotFoundException {
 		when(rewardService.getTotalRewards(anyString(), anyInt())).thenReturn(120);
 
-		Object totalRewards = rewardsController.getTotalRewards("cust1", 2024);
-		Object total = "Total Rewards: " + 120;
+		ResponseEntity<String> response = rewardsController.getTotalRewards("cust1", 2024);
+		String total = "Total Rewards: " + 120;
+		assertEquals(200, response.getStatusCode().value());
+		assertEquals(total, response.getBody());
+	}
 
-		assertEquals(totalRewards, total);
+	@Test
+	public void testNoTransactionTotalRewards() throws TransactionNotFoundException {
+		when(rewardService.getTotalRewards(anyString(), anyInt()))
+				.thenThrow(new TransactionNotFoundException("cust1", 2024));
+
+		ResponseEntity<String> response = rewardsController.getTotalRewards("cust1", 2024);
+		assertEquals(404, response.getStatusCode().value());
+		assertEquals(null, response.getBody());
 	}
 
 }
