@@ -64,11 +64,6 @@
     		 <artifactId>mockito-junit-jupiter</artifactId>
    			 <scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.transaction</groupId>
-			<artifactId>springboot-transaction-app</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
 	</dependencies>
 
 	<build>
