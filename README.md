@@ -62,7 +62,7 @@ http://localhost:8080/api/rewards/monthly?customerId=123&year=2024
 - ** 2. Get Total points**
 
 - **Request** :
-http://localhost:8080/api/rewards/yearly?customerId=103&year=2024
+http://localhost:8080/api/rewards/yearly?customerId=123&year=2024
 
 - **Response** :
 
