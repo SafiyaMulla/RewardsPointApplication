@@ -50,7 +50,7 @@ http://localhost:8080/api/rewards/monthly?customerId=123&year=2024
 ```json
 {
     "AUGUST": 150,
-    "NOVEMBER": 90,
+    "NOVEMBER": 90
 }
 ```
 - **Description** :
