@@ -39,10 +39,6 @@ public class RewardService {
 	public Map<Month, Integer> getRewardsPerMonth(String customerId, int year) {
 
 		Map<Month, Integer> rewardsPerMonth = new HashMap<>();
-		for (Month month : Month.values()) {
-			rewardsPerMonth.put(month, 0);
-		}
-
 		LocalDate startDate = LocalDate.of(year, 1, 1);
 		LocalDate endDate = LocalDate.of(year, 12, 31);
 

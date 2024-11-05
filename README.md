@@ -39,7 +39,7 @@ This application is a rewards points system that allows retailers to calculate r
 - ** 1. Get Monthly points**
 
 - **Request** :
-http://localhost:8080/api/rewards/monthly?customerId=103&year=2024
+http://localhost:8080/api/rewards/monthly?customerId=123&year=2024
 
 - **Response** :
 
@@ -47,22 +47,18 @@ http://localhost:8080/api/rewards/monthly?customerId=103&year=2024
   
   Response Body: (Success):
 
-```
+```json
 {
-    "MARCH": 0,
-    "MAY": 0, 
-    "OCTOBER": 0,
+    "AUGUST": 150,
     "NOVEMBER": 90,
-    "SEPTEMBER": 0,
-    "APRIL": 0,
-    "JULY": 0,
-    "JANUARY": 0,
-    "AUGUST": 0,
-    "JUNE": 0,
-    "FEBRUARY": 0,
-    "DECEMBER": 0
 }
 ```
+- **Description** :
+
+   Above transactions found for two months records only, for August month transaction amount is $150 and November month is $120. And Rewards points earned for
+   August month $150 and November $90.
+ 
+
 - ** 2. Get Total points**
 
 - **Request** :
@@ -75,9 +71,14 @@ http://localhost:8080/api/rewards/yearly?customerId=103&year=2024
   Response Body: (Success):
 
 ```
-Total Rewards: 90
+Total Rewards: 240
 ```
 
+- **Description** :
+
+   Above API return total Rewards points for that year, So Total Rewards: 240. (August 150 + November 90).
+ 
+ 
 ## Sample Data
 This application includes sample data for demonstration purposes. You can find sample data in 'sample.json' file.
 
