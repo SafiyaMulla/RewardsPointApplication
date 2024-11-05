@@ -37,11 +37,36 @@ This application is a rewards points system that allows retailers to calculate r
 ## Endpoints
 
 - **Get Monthly points**
-example :
+Example Request :
 http://localhost:8080/api/rewards/monthly?customerId=103&year=2024
+
+Example Response :
+
+HTTP Status - 200 OK
+Response Body:
+{
+    "MARCH": 0,
+    "MAY": 0, 
+    "OCTOBER": 0,
+    "NOVEMBER": 90,
+    "SEPTEMBER": 0,
+    "APRIL": 0,
+    "JULY": 0,
+    "JANUARY": 0,
+    "AUGUST": 0,
+    "JUNE": 0,
+    "FEBRUARY": 0,
+    "DECEMBER": 0
+}
 - **Get Total points**
-example :
+Example Request :
 http://localhost:8080/api/rewards/yearly?customerId=103&year=2024
+
+Example Response :
+
+HTTP Status - 200 OK
+Response Body:
+Total Rewards: 90
 
 ## Sample Data
 This application includes sample data for demonstration purposes. You can find sample data in 'sample.json' file.
