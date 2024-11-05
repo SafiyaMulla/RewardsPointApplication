@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.transaction.rewardspoint.exception.TransactionNotFoundException;
+import com.transaction.rewardspoint.model.MonthlyRewards;
 import com.transaction.rewardspoint.service.RewardService;
 
 /**
@@ -25,19 +26,22 @@ public class RewardPointsController {
 	private RewardService rewardsService;
 
 	/**
-	 * Retrieves the reward points for a customer for each month of a specified
-	 * year.
+	 * Retrieves the reward points and transaction details for a customer for each
+	 * month of a specified year.
 	 *
 	 * @param customerId the customer's unique ID
 	 * @param year       the year for which to retrieve rewards
-	 * @return a map of months to reward points
+	 * @return a ResponseEntity containing a map of months to MonthlyRewards
+	 *         objects, or a 404 Not Found status if no transactions are found for
+	 *         the customer in the specified year
 	 */
 	@GetMapping("/monthly")
-	public ResponseEntity<Map<Month, Integer>> getCustomerRewardsByMonthly(@RequestParam String customerId,
+	public ResponseEntity<Map<Month, MonthlyRewards>> getCustomerRewardsByMonthly(@RequestParam String customerId,
 			@RequestParam int year) {
 
 		try {
-			Map<Month, Integer> rewards = rewardsService.getRewardsPerMonth(customerId, year);
+			Map<Month, MonthlyRewards> rewards = rewardsService.getRewardsPerMonth(customerId, year);
+
 			return ResponseEntity.ok(rewards);
 		} catch (TransactionNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -45,16 +49,20 @@ public class RewardPointsController {
 	}
 
 	/**
-	 * Retrieves the total reward points for a customer for a specified year.
+	 * To get the total rewards points and all transaction details for a customer in
+	 * a given year.
 	 *
 	 * @param customerId the customer's unique ID
 	 * @param year       the year for which to retrieve rewards
-	 * @return a string with total reward points
+	 * @return a ResponseEntity containing a map with total rewards points and
+	 *         transaction details, or a 404 Not Found status if no transactions are
+	 *         found for the customer in the specified year
 	 */
 	@GetMapping("/yearly")
-	public ResponseEntity<String> getTotalRewards(@RequestParam String customerId, @RequestParam int year) {
+	public ResponseEntity<Map<String, Object>> getTotalRewardsWithDetails(@RequestParam String customerId,
+			@RequestParam int year) {
 		try {
-			String totalRewards = "Total Rewards: " + rewardsService.getTotalRewards(customerId, year);
+			Map<String, Object> totalRewards = rewardsService.getTotalRewardsWithDetails(customerId, year);
 			return ResponseEntity.ok(totalRewards);
 
 		} catch (TransactionNotFoundException e) {

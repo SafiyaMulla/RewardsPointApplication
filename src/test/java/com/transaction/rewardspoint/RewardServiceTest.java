@@ -9,18 +9,23 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.transaction.rewardspoint.exception.TransactionNotFoundException;
+import com.transaction.rewardspoint.model.MonthlyRewards;
 import com.transaction.rewardspoint.model.Transaction;
+import com.transaction.rewardspoint.model.TransactionDetails;
 import com.transaction.rewardspoint.repository.TransactionRepository;
 import com.transaction.rewardspoint.service.RewardService;
 
@@ -41,30 +46,36 @@ public class RewardServiceTest {
 	}
 
 	@Test
-	public void testGetMonthlyRewards() {
-		List<Transaction> transactions = new ArrayList<>();
-		transactions.add(new Transaction("101", 120, LocalDate.of(2024, 8, 15)));
-		transactions.add(new Transaction("102", 80, LocalDate.of(2024, 9, 10)));
+	public void testGetMonthlyRewards() throws JsonProcessingException {
+
 		when(transactionRepository.findByCustomerIdAndTransactionDateBetween(anyString(), any(), any()))
 				.thenReturn(createTransactions());
+		ObjectMapper objectMapper = new ObjectMapper();
+		Map<Month, MonthlyRewards> expectedRewards = new HashMap<>();
+		expectedRewards.put(Month.AUGUST, new MonthlyRewards(150, Arrays.asList(new TransactionDetails(150.0, 150))));
+		expectedRewards.put(Month.SEPTEMBER, new MonthlyRewards(90, Arrays.asList(new TransactionDetails(120.0, 90))));
 
-		Map<Month, Integer> rewards = rewardService.getRewardsPerMonth("101", 2024);
-		Assertions.assertEquals(90, rewards.get(Month.AUGUST));
+		Map<Month, MonthlyRewards> actualRewards = rewardService.getRewardsPerMonth("customer1", 2024);
+		String expectedJson = objectMapper.writeValueAsString(expectedRewards.get(Month.AUGUST));
+		String actualJson = objectMapper.writeValueAsString(actualRewards.get(Month.AUGUST));
+
+		assertEquals(expectedJson, actualJson);
+
 	}
 
 	@Test
 	public void testGetTotalRewards() {
 		when(transactionRepository.findByCustomerIdAndTransactionDateBetween(anyString(), any(), any()))
 				.thenReturn(createTransactions());
+		Map<String, Object> totalRewards = rewardService.getTotalRewardsWithDetails("customer1", 2024);
+		assertEquals(240, totalRewards.get("TotalRewardsPoints"));
 
-		int totalRewards = rewardService.getTotalRewards("101", 2024);
-		assertEquals(120, totalRewards);
 	}
 
 	private List<Transaction> createTransactions() {
 		List<Transaction> transactions = new ArrayList<>();
-		transactions.add(new Transaction("101", 120, LocalDate.of(2024, 8, 15)));
-		transactions.add(new Transaction("102", 80, LocalDate.of(2024, 9, 10)));
+		transactions.add(new Transaction("customer1", 150, LocalDate.of(2024, 8, 15)));
+		transactions.add(new Transaction("customer1", 120, LocalDate.of(2024, 9, 10)));
 		return transactions;
 	}
 
@@ -74,11 +85,11 @@ public class RewardServiceTest {
 				.thenReturn(Collections.emptyList());
 
 		assertThrows(TransactionNotFoundException.class, () -> {
-			rewardService.getRewardsPerMonth("cust1", 2024);
+			rewardService.getRewardsPerMonth("customer1", 2024);
 		});
 
 		assertThrows(TransactionNotFoundException.class, () -> {
-			rewardService.getTotalRewards("cust1", 2024);
+			rewardService.getTotalRewardsWithDetails("customer1", 2024);
 		});
 
 	}

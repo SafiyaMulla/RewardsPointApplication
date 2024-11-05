@@ -1,26 +1,36 @@
 [
 {
     "customerId": "123",
-    "amount": 150.50,
-    "transactionDate": "2024-08-15T10:00:00Z"
+    "amount": 150.00,
+    "transactionDate": {
+	"$date":"2024-08-15T10:00:00Z"
+	}
 },
 {
     "customerId": "103",
-    "amount": 120.50,
-    "transactionDate": "2024-01-15T10:00:00Z"
+    "amount": 120.00,
+    "transactionDate": {
+	"$date":"2024-01-15T10:00:00Z"
+	}
 },
 {
     "customerId": "114",
-    "amount": 180.50,
-    "transactionDate": "2024-05-15T10:00:00Z"
+    "amount": 180.00,
+    "transactionDate":{
+	"$date":"2024-05-15T10:00:00Z"
+	}
 },{
     "customerId": "123",
-    "amount": 120.50,
-    "transactionDate": "2024-11-15T10:00:00Z"
+    "amount": 120.00,
+    "transactionDate": {
+	"$date":"2024-11-15T10:00:00Z"
+	}
 },
 {
     "customerId": "103",
-    "amount": 100.50,
-    "transactionDate": "2024-07-15T10:00:00Z"
+    "amount": 100.00,
+    "transactionDate": {
+	"$date":"2024-07-15T10:00:00Z"
+	}
 }
 ]

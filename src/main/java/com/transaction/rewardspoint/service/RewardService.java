@@ -2,10 +2,10 @@ package com.transaction.rewardspoint.service;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.transaction.rewardspoint.exception.TransactionNotFoundException;
+import com.transaction.rewardspoint.model.MonthlyRewards;
 import com.transaction.rewardspoint.model.Transaction;
+import com.transaction.rewardspoint.model.TransactionDetails;
 import com.transaction.rewardspoint.repository.TransactionRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -34,11 +36,12 @@ public class RewardService {
 	 *
 	 * @param customerId the customer's unique ID
 	 * @param year       the year for which to calculate rewards
-	 * @return a map of months to reward points
+	 * @return a map of months to reward points and transaction details
 	 */
-	public Map<Month, Integer> getRewardsPerMonth(String customerId, int year) {
 
-		Map<Month, Integer> rewardsPerMonth = new HashMap<>();
+	public Map<Month, MonthlyRewards> getRewardsPerMonth(String customerId, int year) {
+
+		Map<Month, MonthlyRewards> rewardsPerMonth = new HashMap<>();
 		LocalDate startDate = LocalDate.of(year, 1, 1);
 		LocalDate endDate = LocalDate.of(year, 12, 31);
 
@@ -50,11 +53,18 @@ public class RewardService {
 		}
 		logger.info("Fetched transactions for customer: {}, year: {}", customerId, year);
 
-		Map<Month, Integer> calculatedRewards = transactions.stream()
-				.collect(Collectors.groupingBy(transaction -> transaction.getTransactionDate().getMonth(),
-						Collectors.summingInt(this::calculateRewardPoints)));
+		for (Transaction transaction : transactions) {
+			Month month = transaction.getTransactionDate().getMonth();
+			int rewardPoints = calculateRewardPoints(transaction);
 
-		calculatedRewards.forEach(rewardsPerMonth::put);
+			rewardsPerMonth.computeIfAbsent(month, k -> new MonthlyRewards(0, new ArrayList<>()));
+
+			TransactionDetails transactionDetails = new TransactionDetails(transaction.getAmount(), rewardPoints);
+
+			MonthlyRewards monthlyRewards = rewardsPerMonth.get(month);
+			monthlyRewards.getTransactions().add(transactionDetails);
+			monthlyRewards.setTotalPoints(monthlyRewards.getTotalPoints() + rewardPoints);
+		}
 
 		return rewardsPerMonth;
 	}
@@ -77,16 +87,22 @@ public class RewardService {
 	}
 
 	/**
-	 * Calculates the total reward points for a customer in a given year.
+	 * Gets the total rewards points and all transaction details for a customer in a
+	 * given year.
 	 *
 	 * @param customerId the customer's unique ID
 	 * @param year       the year for which to calculate total rewards
-	 * @return the total reward points
+	 * @return a map containing total rewards points and all transaction details
 	 */
-	public int getTotalRewards(String customerId, int year) {
-		logger.info("Fetched total transactions for customer: {}, year: {}", customerId, year);
-		return getRewardsPerMonth(customerId, year).values().stream().mapToInt(Integer::intValue).sum();
+	public Map<String, Object> getTotalRewardsWithDetails(String customerId, int year) {
+		Map<Month, MonthlyRewards> rewardsPerMonth = getRewardsPerMonth(customerId, year);
+		int totalPoints = rewardsPerMonth.values().stream().mapToInt(MonthlyRewards::getTotalPoints).sum();
 
+		Map<String, Object> result = new HashMap<>();
+		result.put("TotalRewardsPoints", totalPoints);
+		result.put("MonthlyRewards", rewardsPerMonth);
+
+		return result;
 	}
 
 }
