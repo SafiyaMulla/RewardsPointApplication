@@ -56,8 +56,8 @@ public class RewardServiceTest {
 		expectedRewards.put(Month.SEPTEMBER, new MonthlyRewards(90, Arrays.asList(new TransactionDetails(120.0, 90))));
 
 		Map<Month, MonthlyRewards> actualRewards = rewardService.getRewardsPerMonth("customer1", 2024);
-		String expectedJson = objectMapper.writeValueAsString(expectedRewards.get(Month.AUGUST));
-		String actualJson = objectMapper.writeValueAsString(actualRewards.get(Month.AUGUST));
+		String expectedJson = objectMapper.writeValueAsString(expectedRewards);
+		String actualJson = objectMapper.writeValueAsString(actualRewards);
 
 		assertEquals(expectedJson, actualJson);
 

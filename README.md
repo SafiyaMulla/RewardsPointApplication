@@ -49,14 +49,26 @@ http://localhost:8080/api/rewards/monthly?customerId=123&year=2024
 
 ```json
 {
-    "AUGUST": 150,
-    "NOVEMBER": 90
+    "AUGUST": {
+        "totalPoints": 150,
+        "transactions": [
+            {
+                "amount": 150.0,
+                "rewardsPoints": 150
+            }
+        ]
+    },
+    "NOVEMBER": {
+        "totalPoints": 90,
+        "transactions": [
+            {
+                "amount": 120.0,
+                "rewardsPoints": 90
+            }
+        ]
+    }
 }
 ```
-- **Description** :
-
-   Above transactions found for two months records only, for August month transaction amount is $150 and November month is $120. And Rewards points earned for
-   August month $150 and November $90.
  
 
 - ** 2. Get Total points**
@@ -70,13 +82,31 @@ http://localhost:8080/api/rewards/yearly?customerId=123&year=2024
   
   Response Body: (Success):
 
+```json
+{
+    "TotalRewardsPoints": 240,
+    "MonthlyRewards": {
+        "AUGUST": {
+            "totalPoints": 150,
+            "transactions": [
+                {
+                    "amount": 150.0,
+                    "rewardsPoints": 150
+                }
+            ]
+        },
+        "NOVEMBER": {
+            "totalPoints": 90,
+            "transactions": [
+                {
+                    "amount": 120.0,
+                    "rewardsPoints": 90
+                }
+            ]
+        }
+    }
+}
 ```
-Total Rewards: 240
-```
-
-- **Description** :
-
-   Above API return total Rewards points for that year, So Total Rewards: 240. (August 150 + November 90).
  
  
 ## Sample Data
