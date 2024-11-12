@@ -4,14 +4,12 @@ import java.time.Month;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.transaction.rewardspoint.exception.TransactionNotFoundException;
 import com.transaction.rewardspoint.model.MonthlyRewards;
 import com.transaction.rewardspoint.service.RewardService;
 
@@ -39,13 +37,9 @@ public class RewardPointsController {
 	public ResponseEntity<Map<Month, MonthlyRewards>> getCustomerRewardsByMonthly(@RequestParam String customerId,
 			@RequestParam int year) {
 
-		try {
-			Map<Month, MonthlyRewards> rewards = rewardsService.getRewardsPerMonth(customerId, year);
+		Map<Month, MonthlyRewards> rewards = rewardsService.getRewardsPerMonth(customerId, year);
+		return ResponseEntity.ok(rewards);
 
-			return ResponseEntity.ok(rewards);
-		} catch (TransactionNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		}
 	}
 
 	/**
@@ -61,12 +55,9 @@ public class RewardPointsController {
 	@GetMapping("/yearly")
 	public ResponseEntity<Map<String, Object>> getTotalRewardsWithDetails(@RequestParam String customerId,
 			@RequestParam int year) {
-		try {
-			Map<String, Object> totalRewards = rewardsService.getTotalRewardsWithDetails(customerId, year);
-			return ResponseEntity.ok(totalRewards);
 
-		} catch (TransactionNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		}
+		Map<String, Object> totalRewards = rewardsService.getTotalRewardsWithDetails(customerId, year);
+		return ResponseEntity.ok(totalRewards);
+
 	}
 }

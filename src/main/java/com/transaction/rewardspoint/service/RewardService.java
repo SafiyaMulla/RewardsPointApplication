@@ -2,6 +2,7 @@ package com.transaction.rewardspoint.service;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.transaction.rewardspoint.exception.CustomerNotFoundException;
+import com.transaction.rewardspoint.exception.InvalidYearException;
 import com.transaction.rewardspoint.exception.TransactionNotFoundException;
 import com.transaction.rewardspoint.model.MonthlyRewards;
 import com.transaction.rewardspoint.model.Transaction;
@@ -40,6 +43,9 @@ public class RewardService {
 	 */
 
 	public Map<Month, MonthlyRewards> getRewardsPerMonth(String customerId, int year) {
+
+		customerIdChecks(customerId);
+		transactionYearChecks(year);
 
 		Map<Month, MonthlyRewards> rewardsPerMonth = new HashMap<>();
 		LocalDate startDate = LocalDate.of(year, 1, 1);
@@ -103,6 +109,42 @@ public class RewardService {
 		result.put("MonthlyRewards", rewardsPerMonth);
 
 		return result;
+	}
+
+	/**
+	 * Validates the existence of a customer by their unique identifier. This method
+	 * checks if the specified customer ID exists in the database, and if not, it
+	 * logs a warning and throws a {@link CustomerNotFoundException}.
+	 *
+	 * @param customerId the unique identifier of the customer to check
+	 * @throws CustomerNotFoundException if the specified customer ID does not exist
+	 *                                   in the database
+	 */
+	public void customerIdChecks(String customerId) {
+		if (!(transactionRepository.existByCustomerId(customerId))) {
+			logger.warn("Customer ID not found:" + customerId);
+			throw new CustomerNotFoundException(customerId);
+		}
+	}
+
+	/**
+	 * Validates the specified year for transaction processing. This method checks
+	 * if the provided year is within a valid range (from 1900 up to the current
+	 * year). If the year is out of range, it logs a warning and throws an
+	 * {@link InvalidYearException}.
+	 *
+	 * @param year the year to be validated for transaction processing
+	 * @throws InvalidYearException if the specified year is not within the valid
+	 *                              range (1900 to the current year)
+	 * 
+	 */
+	public void transactionYearChecks(int year) {
+		int currentYear = Year.now().getValue();
+		if (!(year >= 1900 && year <= currentYear)) {
+			logger.warn("Invalid Year:" + year);
+			throw new InvalidYearException(year);
+		}
+
 	}
 
 }

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 import com.transaction.rewardspoint.model.Transaction;
 
@@ -22,4 +23,16 @@ public interface TransactionRepository extends MongoRepository<Transaction, Stri
 	 */
 	List<Transaction> findByCustomerIdAndTransactionDateBetween(String customerId, LocalDate startDate,
 			LocalDate endDate);
+
+	/**
+	 * Checks for the existence of a customer by their unique identifier. This
+	 * method uses a MongoDB query to determine if a document with the specified
+	 * customer ID exists in the database.
+	 *
+	 * @param customerId the unique identifier of the customer to check
+	 * @return {@code true} if a customer with the specified ID exists,
+	 *         {@code false} otherwise
+	 */
+	@Query(value = "{ 'customerId' : ?0 }", exists = true)
+	boolean existByCustomerId(String customerId);
 }

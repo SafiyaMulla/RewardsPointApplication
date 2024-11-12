@@ -56,18 +56,6 @@ class RewardPointsControllerTest {
 	}
 
 	@Test
-	public void testNoTransactionForCustomer() throws TransactionNotFoundException {
-
-		when(rewardService.getRewardsPerMonth(anyString(), anyInt()))
-				.thenThrow(new TransactionNotFoundException("cust1", 2024));
-
-		ResponseEntity<Map<Month, MonthlyRewards>> response = rewardsController.getCustomerRewardsByMonthly("cust1",
-				2024);
-		assertEquals(404, response.getStatusCode().value());
-		assertEquals(null, response.getBody());
-	}
-
-	@Test
 	public void testGetTotalRewards() throws TransactionNotFoundException {
 		Map<String, Object> totalRewards = new HashMap<>();
 		totalRewards.put("TotalRewardsPoints", 240);
@@ -78,16 +66,6 @@ class RewardPointsControllerTest {
 		String total = "Total Rewards: " + 120;
 		assertEquals(200, response.getStatusCode().value());
 		assertEquals(240, response.getBody().get("TotalRewardsPoints"));
-	}
-
-	@Test
-	public void testNoTransactionTotalRewards() throws TransactionNotFoundException {
-		when(rewardService.getTotalRewardsWithDetails(anyString(), anyInt()))
-				.thenThrow(new TransactionNotFoundException("cust1", 2024));
-
-		ResponseEntity<Map<String, Object>> response = rewardsController.getTotalRewardsWithDetails("cust1", 2024);
-		assertEquals(404, response.getStatusCode().value());
-		assertEquals(null, response.getBody());
 	}
 
 }

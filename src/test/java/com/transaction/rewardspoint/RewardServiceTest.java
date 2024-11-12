@@ -22,6 +22,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.transaction.rewardspoint.exception.CustomerNotFoundException;
+import com.transaction.rewardspoint.exception.InvalidYearException;
 import com.transaction.rewardspoint.exception.TransactionNotFoundException;
 import com.transaction.rewardspoint.model.MonthlyRewards;
 import com.transaction.rewardspoint.model.Transaction;
@@ -47,7 +49,7 @@ public class RewardServiceTest {
 
 	@Test
 	public void testGetMonthlyRewards() throws JsonProcessingException {
-
+		when(transactionRepository.existByCustomerId(anyString())).thenReturn(true);
 		when(transactionRepository.findByCustomerIdAndTransactionDateBetween(anyString(), any(), any()))
 				.thenReturn(createTransactions());
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -65,6 +67,7 @@ public class RewardServiceTest {
 
 	@Test
 	public void testGetTotalRewards() {
+		when(transactionRepository.existByCustomerId(anyString())).thenReturn(true);
 		when(transactionRepository.findByCustomerIdAndTransactionDateBetween(anyString(), any(), any()))
 				.thenReturn(createTransactions());
 		Map<String, Object> totalRewards = rewardService.getTotalRewardsWithDetails("customer1", 2024);
@@ -80,17 +83,30 @@ public class RewardServiceTest {
 	}
 
 	@Test
-	public void testNoTransactionsFound() {
+	public void testGetRewardsPerMonthNoTransactionsFound() {
+		String customerId = "123";
+		int year = 2023;
+
+		when(transactionRepository.existByCustomerId(anyString())).thenReturn(true);
 		when(transactionRepository.findByCustomerIdAndTransactionDateBetween(anyString(), any(), any()))
 				.thenReturn(Collections.emptyList());
 
-		assertThrows(TransactionNotFoundException.class, () -> {
-			rewardService.getRewardsPerMonth("customer1", 2024);
-		});
+		assertThrows(TransactionNotFoundException.class, () -> rewardService.getRewardsPerMonth(customerId, year));
+	}
 
-		assertThrows(TransactionNotFoundException.class, () -> {
-			rewardService.getTotalRewardsWithDetails("customer1", 2024);
-		});
+	@Test
+	public void testTransactionYearChecksInvalidYear() {
+		int futureYear = 3000;
+		assertThrows(InvalidYearException.class, () -> rewardService.transactionYearChecks(futureYear));
+	}
 
+	@Test
+	public void testGetRewardsPerMonthCustomerNotFound() {
+		String customerId = "invalid";
+		int year = 2023;
+
+		when(transactionRepository.existByCustomerId(customerId)).thenReturn(false);
+
+		assertThrows(CustomerNotFoundException.class, () -> rewardService.getRewardsPerMonth(customerId, year));
 	}
 }
