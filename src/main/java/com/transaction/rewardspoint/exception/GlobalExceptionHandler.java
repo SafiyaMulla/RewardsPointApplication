@@ -53,5 +53,17 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<String> handleInvalidYearException(InvalidYearException ex) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
 	}
+	
+	/**
+     * Handles all exceptions that are not specifically handled by other methods.
+     *
+     * @param ex the exception that was thrown
+     * @return a ResponseEntity containing an error message and an HTTP status code
+     */
+	@ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception ex) {
+        return new ResponseEntity<>("An unexpected error occurred: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 
 }
