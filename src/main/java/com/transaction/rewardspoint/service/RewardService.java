@@ -86,7 +86,7 @@ public class RewardService {
 		int points = 0;
 		if (amount > 100) {
 			points = (int) (amount - 100) * 2 + 50;
-		} else {
+		} else if (amount <= 100 && amount > 50) {
 			points = (int) (amount - 50);
 		}
 		return points;
